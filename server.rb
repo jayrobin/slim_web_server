@@ -1,10 +1,13 @@
 require 'socket'
+require 'yaml'
 
 class Server
 	def initialize(port, root, error_file)
 		@port = port
 		@root = root
 		@error_file = error_file
+
+		@content_types = load_content_types("content_types.yml")
 	end
 
 	def run
@@ -84,6 +87,10 @@ class Server
 		end
 
 		"#{type}/#{extension}"
+	end
+
+	def load_content_types(yml_file)
+		YAML::load_file(yml_file)
 	end
 end
 
