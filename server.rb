@@ -41,17 +41,23 @@ class Server
 
 	def get_resource(path)
 		begin
+			file_type = path.scan(/\.(.*)$/)[0][0] || "html"
+
 			content = load_file(path)
+
+			content_type = get_content_type(file_type)
+
 			status_code = 200
 			reason = "OK"
 		rescue Exception => e
 			# 404 error
 			status_code = 404
 			reason = "Not found"
+			content_type = "text/html"
 			content = create_error_output(e.to_s)
 		end
 		
-		get_response(status_code, reason, content)
+		get_response(status_code, reason, content, content_type)
 	end
 
 	def load_file(path)
@@ -69,6 +75,15 @@ class Server
 		end
 
 		content
+	end
+
+	def get_content_type(extension)
+		type = case extension
+		when "html", "txt" then "text"
+		when "jpg", "jpeg", "png", "bmp" then "image"
+		end
+
+		"#{type}/#{extension}"
 	end
 end
 
