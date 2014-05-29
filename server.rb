@@ -14,8 +14,8 @@ class Server
 			Thread.start(server.accept) do |client|
 				header = client.read_nonblock(256)
 
-				method = get_http_method(header)
-				resource = get_resource(header)
+				requested_resource = get_resource_from_header(header)
+				client.puts get_resource(requested_resource)
 
 				client.close
 			end
@@ -24,11 +24,11 @@ class Server
 
 	private
 
-	def get_http_method(header)
+	def get_method_from_header(header)
 		header.scan(/^(.*) .* HTTP/)[0][0]
 	end
 
-	def get_resource(header)
+	def get_resource_from_header(header)
 		header.scan(/^.* (.*) HTTP/)[0][0]
 	end
 
@@ -39,7 +39,22 @@ class Server
 		response << "#{content}\r\n"
 	end
 
-	def load_resource(path)
+	def get_resource(path)
+		begin
+			content = load_file(path)
+			status_code = 200
+			reason = "OK"
+		rescue Exception => e
+			# 404 error
+			status_code = 404
+			reason = "Not found"
+			content = e.to_s
+		end
+		
+		get_response(status_code, reason, content)
+	end
+
+	def load_file(path)
 		File.read(".#{path}")
 	end
 end
