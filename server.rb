@@ -27,6 +27,13 @@ class Server
 	def get_resource(header)
 		header.scan(/^.* (.*) HTTP/)[0]
 	end
+
+	def get_response(status_code, reason, content_type, content)
+		response = "HTTP/1.1 #{status_code} #{reason}\r\n"
+		response << "Content-type: #{content_type}\r\n"
+		response << "Content-length: #{content.size}\r\n\r\n"
+		response << "#{content}\r\n"
+	end
 end
 
 server = Server.new(3001)
