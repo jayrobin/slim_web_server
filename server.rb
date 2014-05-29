@@ -21,11 +21,11 @@ class Server
 	end
 
 	def get_http_method(header)
-		header.scan(/^(.*) .* HTTP/)[0]
+		header.scan(/^(.*) .* HTTP/)[0][0]
 	end
 
 	def get_resource(header)
-		header.scan(/^.* (.*) HTTP/)[0]
+		header.scan(/^.* (.*) HTTP/)[0][0]
 	end
 
 	def get_response(status_code, reason, content, content_type = "text/html")
