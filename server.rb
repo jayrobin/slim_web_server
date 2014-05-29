@@ -1,6 +1,8 @@
 require 'socket'
 
 class Server
+	FileNotFoundError = Class.new(StandardError)
+	
 	def initialize(port)
 		@port = port
 	end
@@ -15,7 +17,7 @@ class Server
 				method = get_http_method(header)
 				resource = get_resource(header)
 
-			  client.close
+				client.close
 			end
 		end
 	end
@@ -35,6 +37,10 @@ class Server
 		response << "Content-type: #{content_type}\r\n"
 		response << "Content-length: #{content.size}\r\n\r\n"
 		response << "#{content}\r\n"
+	end
+
+	def load_resource(path)
+		File.read(".#{path}")
 	end
 end
 
