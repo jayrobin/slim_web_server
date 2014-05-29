@@ -28,7 +28,7 @@ class Server
 		header.scan(/^.* (.*) HTTP/)[0]
 	end
 
-	def get_response(status_code, reason, content_type, content)
+	def get_response(status_code, reason, content, content_type = "text/html")
 		response = "HTTP/1.1 #{status_code} #{reason}\r\n"
 		response << "Content-type: #{content_type}\r\n"
 		response << "Content-length: #{content.size}\r\n\r\n"
