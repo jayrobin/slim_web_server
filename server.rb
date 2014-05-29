@@ -1,11 +1,18 @@
 require 'socket'
 
+def get_http_method(header)
+	header.scan(/^(.*) .* HTTP/)[0]
+end
+
 port = 3001
 server = TCPServer.open(port)
 
 loop do
 	Thread.start(server.accept) do |client|
-	  client.puts "Connection acknowledged"
+		header = client.read_nonblock(256)
+
+		method = get_http_method(header)
+		
 	  client.close
 	end
 end
