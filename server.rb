@@ -20,6 +20,8 @@ class Server
 		end
 	end
 
+	private
+
 	def get_http_method(header)
 		header.scan(/^(.*) .* HTTP/)[0][0]
 	end
