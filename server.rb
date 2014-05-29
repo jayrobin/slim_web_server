@@ -28,11 +28,11 @@ class Server
 	private
 
 	def get_method_from_header(header)
-		header.scan(/^(.*) .* HTTP/)[0][0]
+		header.scan(/^(.*) .* HTTP/).flatten.first
 	end
 
 	def get_resource_from_header(header)
-		header.scan(/^.* (.*) HTTP/)[0][0]
+		header.scan(/^.* (.*) HTTP/).flatten.first
 	end
 
 	def get_response(status_code, reason, content, content_type = "text/html")
@@ -44,11 +44,11 @@ class Server
 
 	def get_resource(path)
 		begin
-			file_type = path.scan(/\.(.*)$/)[0][0] || "html"
+			file_type = path.scan(/\.(.*)$/).flatten.first
 
 			content = load_file(path)
-
 			content_type = get_content_type(file_type)
+			puts content_type
 
 			status_code = 200
 			reason = "OK"
@@ -57,6 +57,7 @@ class Server
 			status_code = 404
 			reason = "Not found"
 			content_type = "text/html"
+			
 			content = create_error_output(e.to_s)
 		end
 		
@@ -81,12 +82,7 @@ class Server
 	end
 
 	def get_content_type(extension)
-		type = case extension
-		when "html", "txt" then "text"
-		when "jpg", "jpeg", "png", "bmp" then "image"
-		end
-
-		"#{type}/#{extension}"
+		@content_types[extension] || "text/html"
 	end
 
 	def load_content_types(yml_file)
