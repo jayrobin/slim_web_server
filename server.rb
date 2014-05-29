@@ -99,7 +99,7 @@ class Server
 	end
 end
 
-port = ARGV[0] || 3001
+port = ARGV[0] || 80
 root = ARGV[1] || "/index.html"
 error_file = ARGV[2] || "/error.html"
 
