@@ -1,11 +1,10 @@
 require 'socket'
 
 class Server
-	FileNotFoundError = Class.new(StandardError)
-	
-	def initialize(port, root)
+	def initialize(port, root, error_file)
 		@port = port
 		@root = root
+		@error_file = error_file
 	end
 
 	def run
@@ -49,7 +48,7 @@ class Server
 			# 404 error
 			status_code = 404
 			reason = "Not found"
-			content = e.to_s
+			content = create_error_output(e.to_s)
 		end
 		
 		get_response(status_code, reason, content)
@@ -60,10 +59,22 @@ class Server
 
 		File.read(".#{path}")
 	end
+
+	def create_error_output(error)
+		begin
+			content = load_file(@error_file)
+			content.gsub!("<%= yield %>", error)
+		rescue Exception => e
+			content = error
+		end
+
+		content
+	end
 end
 
 port = ARGV[0] || 3001
 root = ARGV[1] || "/index.html"
+error_file = ARGV[2] || "/error.html"
 
-server = Server.new(port, root)
+server = Server.new(port, root, error_file)
 server.run
