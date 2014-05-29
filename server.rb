@@ -3,8 +3,9 @@ require 'socket'
 class Server
 	FileNotFoundError = Class.new(StandardError)
 	
-	def initialize(port)
+	def initialize(port, root)
 		@port = port
+		@root = root
 	end
 
 	def run
@@ -55,9 +56,14 @@ class Server
 	end
 
 	def load_file(path)
+		path = @root if path == "/"
+
 		File.read(".#{path}")
 	end
 end
 
-server = Server.new(3001)
+port = ARGV[0] || 3001
+root = ARGV[1] || "/index.html"
+
+server = Server.new(port, root)
 server.run
