@@ -64,7 +64,7 @@ class Server
 		begin
 			content = load_file(@error_file)
 			content.gsub!("<%= yield %>", error)
-		rescue Exception => e
+		rescue
 			content = error
 		end
 
