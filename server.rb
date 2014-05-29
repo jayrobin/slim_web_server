@@ -35,10 +35,12 @@ class Server
 		header.scan(/^.* (.*) HTTP/).flatten.first
 	end
 
-	def get_response(status_code, reason, content, content_type = "text/html")
+	def get_response(status_code, reason, content, content_type = "text/html", content_length = nil)
+		content_length ||= content.size
+
 		response = "HTTP/1.1 #{status_code} #{reason}\r\n"
 		response << "Content-type: #{content_type}\r\n"
-		response << "Content-length: #{content.size}\r\n\r\n"
+		response << "Content-length: #{content_length}\r\n\r\n"
 		response << "#{content}\r\n"
 	end
 
@@ -47,8 +49,8 @@ class Server
 			file_type = path.scan(/\.(.*)$/).flatten.first
 
 			content = load_file(path)
+			content_length = get_file_size(path)
 			content_type = get_content_type(file_type)
-			puts content_type
 
 			status_code = 200
 			reason = "OK"
@@ -57,17 +59,24 @@ class Server
 			status_code = 404
 			reason = "Not found"
 			content_type = "text/html"
-			
+			content_length = nil
+
 			content = create_error_output(e.to_s)
 		end
 		
-		get_response(status_code, reason, content, content_type)
+		get_response(status_code, reason, content, content_type, content_length)
 	end
 
 	def load_file(path)
 		path = @root if path == "/"
 
 		File.read(".#{path}")
+	end
+
+	def get_file_size(path)
+		path = @root if path == "/"
+
+		File.size(".#{path}")
 	end
 
 	def create_error_output(error)
